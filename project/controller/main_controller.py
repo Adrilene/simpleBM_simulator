@@ -26,15 +26,7 @@ from project.util.construct_scenario import (
     queue_smartphone_st,
 )
 from time import sleep
-from project import socketio
 # from project.util.wait_user_confirm import checkUserConfirm
-
-
-@app.route("/", methods=["GET"])
-def index():
-    start_controllers()
-    return render_template("index.html")
-
 
 @socketio.on("restart")
 def restart():

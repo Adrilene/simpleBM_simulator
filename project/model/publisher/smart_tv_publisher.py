@@ -1,3 +1,5 @@
+import pika
+import json
 from project.util.construct_scenario import (
     exchange,
     st_info
@@ -5,9 +7,6 @@ from project.util.construct_scenario import (
 from project.util.config_broker import ConfigScenario
 from project.model.service.smart_tv_service import SmartTvService
 from threading import Thread
-from project import socketio
-import pika
-import json
 
 
 class SmartTvPublisher(ConfigScenario, Thread):
@@ -27,5 +26,4 @@ class SmartTvPublisher(ConfigScenario, Thread):
                 properties=pika.BasicProperties(delivery_mode=2,),
                 body=json.dumps(message),
             )
-            socketio.emit("TvSent", {"type": "status", "block": last})
-            print("(Publish) ST: ", message)
+            print("(Publish) ", message)

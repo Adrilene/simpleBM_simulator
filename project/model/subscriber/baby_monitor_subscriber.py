@@ -7,7 +7,6 @@ from project.util.construct_scenario import (
     bm_msg
 )
 from threading import Thread
-from project import socketio
 import json
 
 

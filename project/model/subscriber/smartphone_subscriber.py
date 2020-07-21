@@ -1,30 +1,21 @@
+import threading
+import json
 from project.util.config_broker import ConfigScenario
 from project.util.construct_scenario import (
     exchange,
     queue_smartphone_bm,
     queue_smartphone_st,
     bm_info,
-    st_msg,
     st_info,
 )
+from project.model.publisher.smartphone_publisher import SmartphonePublisher
 from project.model.business.smartphone_business import (
-    wait_user_confirm,
     check_is_notification,
-    send_confirm_baby_monitor,
     forward_message_smart_tv,
     type_notification,
-    check_user_confirm
+    check_user_confirm,
 )
-from project.model.smartphone import (
-    control,
-    confirm_user,
-    mutex_confirm
-)
-from project import socketio
 from threading import Thread
-import threading
-import json
-from project.model.publisher.smartphone_publisher import SmartphonePublisher
 from time import sleep
 
 data = None
@@ -64,8 +55,8 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
 
     def consume_message_baby_monitor(self):
         print(
-            " [*] Smartphone waiting for messages from Baby Monitor." +
-            " To exit press CTRL+C"
+            " [*] Smartphone waiting for messages from Baby Monitor."
+            + " To exit press CTRL+C"
         )
         self.channel.basic_consume(
             queue=queue_smartphone_bm,
@@ -76,10 +67,7 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
         self.channel.start_consuming()
 
     def consume_message_tv(self):
-        print(
-            " [*] Smartphone waiting for messages from TV." +
-            " To exit press CTRL+C"
-        )
+        print(" [*] Smartphone waiting for messages from TV." + " To exit press CTRL+C")
 
         self.channel.basic_consume(
             queue=queue_smartphone_st,
@@ -93,33 +81,22 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         body = body.decode("UTF-8")
         body = json.loads(body)
+        print('FROM BABYMONITOR: ', body)
         notification = check_is_notification(body)
-        socketio.emit("SmartphoneReceive", body)
         if notification:
-            info = type_notification(body)
-            socketio.emit("SmartphoneInformation", {"info": info})
             if body["time_no_breathing"] == 10:
                 forward_message_smart_tv()
-        else:
-            socketio.emit("SmartphoneInformation", {"info": "Emma is fine."})
 
     def callback_smart_tv(self, ch, method, properties, body):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         body = body.decode("UTF-8")
         body = json.loads(body)
-        socketio.emit("FromTv", body)
+        print('FROM SMARTTV: ', body)
         sleep(1)
         confirm = check_user_confirm()
         if body["block"] and not confirm:
-            socketio.emit(
-                "FromTvInformation",
-                {"info": "TV couldn't show message"}
-            )
             # forward again
             forward_message_smart_tv()
         else:
-            socketio.emit(
-                "FromTvInformation", {"info": "TV just showed the message"}
-            )
             # send confirmation to BM
             SmartphonePublisher("confirmation").start()

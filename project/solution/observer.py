@@ -5,7 +5,6 @@ from time import sleep
 from pyrabbit.api import Client
 from project.solution.observer_service import ObserverService
 from project.solution.observer_model import ObserverModel
-from project import socketio
 
 
 class Observer(threading.Thread):
@@ -97,7 +96,6 @@ class Observer(threading.Thread):
         for function, params in self.steps_to_adapt:
             function(*params)
         sleep(1)
-        socketio.emit('successAdapter')
 
     def return_normal_behave(self):
         for function, params in self.steps_for_behave_normal:

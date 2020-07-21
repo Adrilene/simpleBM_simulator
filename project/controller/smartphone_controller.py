@@ -1,4 +1,3 @@
-from project import socketio
 from project.model.publisher.smartphone_publisher import SmartphonePublisher
 from project.model.subscriber.smartphone_subscriber import SmartphoneSubscriber
 from project.model.service.baby_monitor_service import BabyMonitorService
@@ -8,7 +7,6 @@ from time import sleep
 sp_on = False
 
 
-@socketio.on("smartphoneConnect")
 def smartphone_connect():
     global sp_on
     sp_on = True
@@ -27,13 +25,11 @@ def smartphone_connect():
             break
 
 
-@socketio.on("smartphoneDisconnect")
 def smartphone_disconnect():
     global sp_on
     sp_on = False
 
 
-@socketio.on("confirmUser")
 def user_confirm():
     last_send = BabyMonitorService(BabyMonitorSend).last_record()
     id_notification = last_send["id"]

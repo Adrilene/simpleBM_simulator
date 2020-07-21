@@ -1,3 +1,5 @@
+import json
+import pika
 from project.util.construct_scenario import (
     exchange,
     bm_msg,
@@ -7,9 +9,6 @@ from project.util.config_broker import ConfigScenario
 from project.model.service.baby_monitor_service import BabyMonitorService
 from project.model.baby_monitor import BabyMonitorSend, BabyMonitorReceive
 from threading import Thread
-from project import socketio
-import json
-import pika
 
 
 class SmartphonePublisher(ConfigScenario, Thread):
@@ -34,12 +33,11 @@ class SmartphonePublisher(ConfigScenario, Thread):
             properties=pika.BasicProperties(delivery_mode=2,),
             body=json.dumps(confirmation),
         )
-        socketio.emit("SmartphoneSent", confirmation)
         last_record = BabyMonitorService(BabyMonitorSend).last_record()
         user_confirm = {"id_notification": last_record["id"], "type": "confirm"}
         BabyMonitorService(BabyMonitorReceive).insert_data(user_confirm)
 
-        print("(Publish) SM|BM: ")
+        print("(Publish) Notification Confirmed!")
 
     def forward_message(self):
         last_record = BabyMonitorService(BabyMonitorSend).last_record()
@@ -51,8 +49,7 @@ class SmartphonePublisher(ConfigScenario, Thread):
             properties=pika.BasicProperties(delivery_mode=2,),
             body=json.dumps(notification),
         )
-        socketio.emit("SmartphoneSent", notification)
-        print("(Publish) SM|ST: ", notification)
+        print("(Publish) Forwarding notification to TV.")
 
     def format_notification(self, body):
         if body:
