@@ -1,12 +1,13 @@
 import json
 import pika
+import random
+from datetime import datetime
 from project.util.construct_scenario import (
     exchange,
     bm_info,
 )
 from project.controller.smartphone_controller import user_confirm
 from project.model.baby_monitor import BabyMonitorSend, BabyMonitorReceive
-from project.model.publisher.smartphone_publisher import SmartphonePublisher
 from project.model.service.baby_monitor_service import BabyMonitorService
 from project.util.clean_dict import clean_dict_baby_monitor
 from project.util.config_broker import ConfigScenario
@@ -29,7 +30,7 @@ class BabyMonitorPublisher(ConfigScenario, Thread):
 
     def publish_info_baby(self, status):
         global once
-        '''if status["type"] == "notification" and once:
+        if status["type"] == "notification" and once:
             random.seed(datetime.now())
             choice = random.choices([True, False], [0.0, 1.0], k=1)[0]
             if choice:
@@ -37,7 +38,7 @@ class BabyMonitorPublisher(ConfigScenario, Thread):
             once = False
 
         if status["type"] == "status":
-            once = True'''
+            once = True
 
         self.channel.basic_publish(
             exchange=exchange,

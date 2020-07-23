@@ -19,6 +19,7 @@ from threading import Thread
 from time import sleep
 
 data = None
+count_attempts = 0
 
 
 class SmartphoneSubscriber(ConfigScenario, Thread):
@@ -67,7 +68,10 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
         self.channel.start_consuming()
 
     def consume_message_tv(self):
-        print(" [*] Smartphone waiting for messages from TV." + " To exit press CTRL+C")
+        print(
+            " [*] Smartphone waiting for messages from TV." +
+            " To exit press CTRL+C"
+        )
 
         self.channel.basic_consume(
             queue=queue_smartphone_st,
@@ -88,6 +92,8 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
                 forward_message_smart_tv()
 
     def callback_smart_tv(self, ch, method, properties, body):
+        global count_attempts
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
         body = body.decode("UTF-8")
         body = json.loads(body)
@@ -96,7 +102,16 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
         confirm = check_user_confirm()
         if body["block"] and not confirm:
             # forward again
+            if count_attempts >= 3:
+                send_confirm = input(
+                    'Many attempts to forward.' +
+                    'Do you want to send confirmation? [s/n]'
+                )
+                if send_confirm == 's':
+                    SmartphonePublisher("confirmation").start()
+                    return
             forward_message_smart_tv()
+            count_attempts += 1
         else:
             # send confirmation to BM
             SmartphonePublisher("confirmation").start()

@@ -9,7 +9,7 @@ class SmartTvService():
         db.session.commit()
 
     def last_record(self):
-        data = SmartTv().query.order_by(
+        data = SmartTv.query.order_by(
             SmartTv.id.desc()).first()
         if not data:
             return data

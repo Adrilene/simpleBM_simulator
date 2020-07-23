@@ -19,11 +19,11 @@ class SmartTvPublisher(ConfigScenario, Thread):
         last = SmartTvService().last_record()
         if last:
             last = last["block"]
-            message = {"type": "status", "block": last}
-            self.channel.basic_publish(
-                exchange=exchange,
-                routing_key=st_info,
-                properties=pika.BasicProperties(delivery_mode=2,),
-                body=json.dumps(message),
-            )
-            print("(Publish) ", message)
+        message = {"type": "status", "block": last}
+        self.channel.basic_publish(
+            exchange=exchange,
+            routing_key=st_info,
+            properties=pika.BasicProperties(delivery_mode=2,),
+            body=json.dumps(message),
+        )
+        print("(Publish) ", message)

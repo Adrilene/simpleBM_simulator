@@ -2,9 +2,7 @@ from project.model.publisher.smartphone_publisher import SmartphonePublisher
 from project.model.service.baby_monitor_service import BabyMonitorService
 from project.model.baby_monitor import BabyMonitorSend, BabyMonitorReceive
 from time import sleep
-from datetime import datetime
 from project.model.smartphone import confirm_user
-from project import socketio
 
 user_confirm = None
 control_thread = None
@@ -42,8 +40,8 @@ def wait_user_confirm(*body):
         if confirm_user:
             return None
     if not confirm_user:
-        forward_message_smart_tv(body)
-        socketio.emit("SmartphoneSent", {"info": "Notification Forward to TV!"})
+        forward_message_smart_tv()
+
 
 def type_notification(body):
     if body:

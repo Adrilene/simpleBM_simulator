@@ -1,10 +1,5 @@
 from project.util.config_broker import ConfigScenario
-from project.util.construct_scenario import (
-    exchange,
-    queue_smart_tv,
-    st_msg
-)
-from project import socketio
+from project.util.construct_scenario import exchange, queue_smart_tv, st_msg
 from threading import Thread
 import json
 from project.model.service.smart_tv_service import SmartTvService
@@ -43,11 +38,5 @@ class SmartTvSubscriber(ConfigScenario, Thread):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         body = body.decode("UTF-8")
         body = json.loads(body)
-        socketio.emit("TvReceive", body)
-        last_record = SmartTvService().last_record()
-
-        if last_record is not None:
-            if not last_record['block']:
-                socketio.emit("FromSmartphone", body)
-
-            SmartTvPublisher().start()
+        print("FROM SMARTPHONE: ", body)
+        SmartTvPublisher().start()
