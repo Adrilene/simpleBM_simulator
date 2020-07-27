@@ -3,8 +3,7 @@ import threading
 import json
 from time import sleep
 from pyrabbit.api import Client
-from project.solution.observer_service import ObserverService
-from project.solution.observer_model import ObserverModel
+from project.controller.smart_tv_controller import block_tv
 
 
 class Observer(threading.Thread):
@@ -18,10 +17,21 @@ class Observer(threading.Thread):
         self.channel.queue_declare(self.queue)
         self.adaptation = False
         self.steps_to_adapt = None
-        self.steps_for_behave_normal = None
+        self.steps_for_normal_behave = None
         self.messages_types = None
         self.exceptional_scenarios = None
         self.subscribe_in_all_queues()
+
+    def run(self):
+        print(
+            " [*] Observer is waiting for messages."
+            + " To exit press CTRL+C"
+        )
+        self.channel.basic_consume(
+            queue=self.queue, on_message_callback=self.callback,
+            auto_ack=False
+        )
+        self.channel.start_consuming()
 
     def get_bindings(self):
         client = Client("localhost:15672", "guest", "guest")
@@ -32,7 +42,6 @@ class Observer(threading.Thread):
             if b["source"] == "exchange_baby_monitor":
                 bindings_result.append(b)
 
-        print('BINDINGS: ', bindings_result)
         return bindings_result
 
     def subscribe_in_all_queues(self):
@@ -44,7 +53,7 @@ class Observer(threading.Thread):
                 queue=self.queue,
                 routing_key=bind["routing_key"],
             )
-
+            print("Subscribed in ", bind["routing_key"])
         return bindings
 
     def callback(self, ch, method, properties, body):
@@ -59,13 +68,6 @@ class Observer(threading.Thread):
     def define_messages(self, types: list):
         self.messages_types = types
 
-    def run(self):
-        self.channel.basic_consume(
-            queue=self.queue, on_message_callback=self.callback, auto_ack=False
-        )
-
-        self.channel.start_consuming()
-
     def stop(self):
         raise SystemExit()
 
@@ -76,13 +78,11 @@ class Observer(threading.Thread):
             print("OBSERVER - Recebi mensagem de notificação")
             if self.adaptation:
                 print("OBSERVER - Minha adaptação falhou")
-                ObserverService(ObserverModel).insert_data({"success": False})
 
         # Momento de voltar ao normal
         if message["type"] == "confirmation":
             if self.adaptation:
                 print("OBSERVER - Minha adaptação deu certo")
-                ObserverService(ObserverModel).insert_data({"success": True})
                 self.adaptation = False
                 self.return_normal_behave()
 
@@ -98,6 +98,14 @@ class Observer(threading.Thread):
         sleep(1)
 
     def return_normal_behave(self):
-        for function, params in self.steps_for_behave_normal:
+        for function, params in self.steps_for_normal_behave:
             function(*params)
 
+def main(): 
+    observer = Observer()
+    observer.messages_types = ("status", "notification", "confirmation")
+    observer.steps_to_adapt = [(block_tv, (False,))]
+    observer.steps_for_normal_behave = [(block_tv, (True,))]
+    observer.start()
+
+main()
