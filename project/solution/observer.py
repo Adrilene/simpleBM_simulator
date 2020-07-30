@@ -100,12 +100,3 @@ class Observer(threading.Thread):
     def return_normal_behave(self):
         for function, params in self.steps_for_normal_behave:
             function(*params)
-
-def main(): 
-    observer = Observer()
-    observer.messages_types = ("status", "notification", "confirmation")
-    observer.steps_to_adapt = [(block_tv, (False,))]
-    observer.steps_for_normal_behave = [(block_tv, (True,))]
-    observer.start()
-
-main()
