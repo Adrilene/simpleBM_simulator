@@ -13,10 +13,7 @@ def observer_connect():
     observer.steps_to_adapt = [(block_tv, (False,))]
     observer.steps_for_behave_normal = [(block_tv, (True,))]
     observer.start()
-    while True:
-        if not ob_on:
-            observer.stop()
-            break
+    observer.join()
 
 
 def observer_disconnect():
