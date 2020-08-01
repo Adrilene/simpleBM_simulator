@@ -9,13 +9,12 @@ from project.util.construct_scenario import (
     st_info,
 )
 from project.model.publisher.smartphone_publisher import SmartphonePublisher
-from project.model.business.smartphone_business import (
-    check_is_notification,
-    forward_message_smart_tv,
-    type_notification,
-    check_user_confirm,
-)
 from threading import Thread
+from project.model.business.smartphone_business import (
+    check_user_confirm,
+    check_is_notification,
+    forward_message_smart_tv
+)
 from time import sleep
 
 data = None

@@ -3,7 +3,6 @@ import threading
 import json
 from time import sleep
 from pyrabbit.api import Client
-from project.controller.smart_tv_controller import block_tv
 
 
 class Observer(threading.Thread):

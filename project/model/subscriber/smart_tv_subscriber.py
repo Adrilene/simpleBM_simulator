@@ -2,7 +2,6 @@ from project.util.config_broker import ConfigScenario
 from project.util.construct_scenario import exchange, queue_smart_tv, st_msg
 from threading import Thread
 import json
-from project.model.service.smart_tv_service import SmartTvService
 from project.model.publisher.smart_tv_publisher import SmartTvPublisher
 
 
