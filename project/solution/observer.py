@@ -71,23 +71,23 @@ class Observer(threading.Thread):
         raise SystemExit()
 
     def read_message(self, message, source):
-        # Momento opcional para saber se a adaptação falou
-        # Acho que isso tá no esganando amiga!
         if message["type"] == "notification":
-            print("OBSERVER - Recebi mensagem de notificação")
+            print("ACTION - I've received a notification message.")
             if self.adaptation:
-                print("OBSERVER - Minha adaptação falhou")
+                print("ACTION - My adaptation failed.")
 
-        # Momento de voltar ao normal
         if message["type"] == "confirmation":
             if self.adaptation:
-                print("OBSERVER - Minha adaptação deu certo")
+                print("ACTION - My adaptation succeeded.")
                 self.adaptation = False
                 self.return_normal_behave()
 
-        # Momento da adaptação
-        if message["type"] == "status" and source == "st_info" and message["block"]:
-            print("OBSERVER - Vou desbloquear a TV")
+        if (
+            message["type"] == "status" and
+            source == "st_info" and
+            message["block"]
+        ):
+            print("ACTION - I'm going to unlock the TV.")
             self.adaptation = True
             self.adaptation_action()
 
@@ -97,5 +97,6 @@ class Observer(threading.Thread):
         sleep(1)
 
     def return_normal_behave(self):
+        print("ACTION - I'm going to lock the TV.")
         for function, params in self.steps_for_normal_behave:
             function(*params)

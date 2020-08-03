@@ -17,6 +17,7 @@ class SmartTvPublisher(ConfigScenario, Thread):
 
     def run(self):
         last = SmartTvService().last_record()
+        print(last)
         if last:
             last = last["block"]
         message = {"type": "status", "block": last}

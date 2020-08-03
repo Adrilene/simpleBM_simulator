@@ -11,7 +11,7 @@ def observer_connect():
     observer = Observer()
     observer.messages_types = ("status", "notification", "confirmation")
     observer.steps_to_adapt = [(block_tv, (False,))]
-    observer.steps_for_behave_normal = [(block_tv, (True,))]
+    observer.steps_for_normal_behave = [(block_tv, (True,))]
     observer.start()
     observer.join()
 
