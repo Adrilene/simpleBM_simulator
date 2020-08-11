@@ -94,7 +94,7 @@ class Observer(threading.Thread):
     def adaptation_action(self):
         for function, params in self.steps_to_adapt:
             function(*params)
-        sleep(1)
+        sleep(2)
 
     def return_normal_behave(self):
         print("ACTION - I'm going to lock the TV.")

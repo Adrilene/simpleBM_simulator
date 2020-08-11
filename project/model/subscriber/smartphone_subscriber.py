@@ -19,6 +19,8 @@ from time import sleep
 
 data = None
 count_attempts = 0
+count_time = 0
+notification_first = False
 
 
 class SmartphoneSubscriber(ConfigScenario, Thread):
@@ -87,6 +89,7 @@ class SmartphoneSubscriber(ConfigScenario, Thread):
         print('FROM BABYMONITOR: ', body)
         notification = check_is_notification(body)
         if notification:
+            notification_first = True
             if body["time_no_breathing"] == 10:
                 forward_message_smart_tv()
 

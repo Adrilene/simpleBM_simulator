@@ -43,6 +43,7 @@ class BabyMonitorSubscriber(ConfigScenario, Thread):
         self.channel.start_consuming()
 
     def callback_baby_monitor(self, ch, method, properties, body):
+        print(f'FROM SMARTPHONE: {body}')
         ch.basic_ack(delivery_tag=method.delivery_tag)
         body = body.decode("UTF-8")
         body = json.loads(body)

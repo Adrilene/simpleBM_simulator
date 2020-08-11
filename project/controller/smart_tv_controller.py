@@ -14,19 +14,8 @@ def tv_connect():
     random.seed(datetime.now())
     block = random.choices([True, False], [1.0, 0.0], k=1)[0]
     SmartTvService().insert_data({'block': block})  # Setar aqui random
-    print(SmartTvService().last_record())
     subscriber.start()
-    while True:
-        sleep(1)
-        if not tv_on:
-            subscriber.stop()
-            break
-
-
-def tv_disconnect():
-    global tv_on
-    tv_on = False
-
+    subscriber.join()
 
 def block_tv(blocked):
     if blocked:
